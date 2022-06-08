@@ -5,15 +5,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import ru.yandex.practicum.filmorate.FilmorateApplication;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class FilmControllerTest {
-
 	private final String filmServerURL = "http://localhost:8080/films";
-
 	private static HttpTestClient httpTestClient;
-
 	private static ConfigurableApplicationContext context;
 
 	@BeforeAll
@@ -81,19 +77,16 @@ class FilmControllerTest {
 	@DisplayName("Film create")
 	@Test
 	void test1_createFilm() {
-
 		httpTestClient.post(filmServerURL, filmJsonValid);
 		assertEquals(200, httpTestClient.getLastResponseStatusCode());
-
 		// тест создание фильма
-		String jsonData = httpTestClient.response.body();
+		String jsonData = httpTestClient.getResponse().body();
 		assertEquals(filmJsonValidTestCreate, jsonData);
 	}
 
 	@DisplayName("Film create Fail name")
 	@Test
 	void test2_createFilmFailName() {
-
 		// название не может быть пустым
 		httpTestClient.post(filmServerURL, filmJsonEmptyTitle);
 		assertEquals(400, httpTestClient.getLastResponseStatusCode());
@@ -102,7 +95,6 @@ class FilmControllerTest {
 	@DisplayName("Film create Fail description")
 	@Test
 	void test3_createFilmFailDesc() {
-
 		// максимальная длина описания — 200 символов
 		httpTestClient.post(filmServerURL, filmJsonBigDescription);
 		assertEquals(400, httpTestClient.getLastResponseStatusCode());
@@ -111,7 +103,6 @@ class FilmControllerTest {
 	@DisplayName("Film create Fail release data")
 	@Test
 	void test4_createFilmFailReleaseData() {
-
 		// дата релиза — не раньше 28 декабря 1895 года;
 		httpTestClient.post(filmServerURL, filmJsonOldRelease);
 		assertEquals(500, httpTestClient.getLastResponseStatusCode());
@@ -120,7 +111,6 @@ class FilmControllerTest {
 	@DisplayName("Film create Fail duration")
 	@Test
 	void test5_createFilmFailDuration() {
-
 		// продолжительность фильма должна быть положительной
 		httpTestClient.post(filmServerURL, filmJsonNegativeDuration);
 		assertEquals(400, httpTestClient.getLastResponseStatusCode());
@@ -129,21 +119,17 @@ class FilmControllerTest {
 	@DisplayName("Film update")
 	@Test
 	void test6_updateFilm() {
-
 		httpTestClient.post(filmServerURL, filmJsonValid);
-
 		httpTestClient.put(filmServerURL, filmJsonUpdate);
 		assertEquals(200, httpTestClient.getLastResponseStatusCode());
-
 		// тест обновления фильма
-		String jsonData = httpTestClient.response.body();
+		String jsonData = httpTestClient.getResponse().body();
 		assertEquals(filmJsonUpdate, jsonData);
 	}
 
 	@DisplayName("Film update unknown")
 	@Test
 	void test7_updateFilmUnknown() {
-
 		httpTestClient.put(filmServerURL, filmJsonUpdate);
 		assertEquals(500, httpTestClient.getLastResponseStatusCode());
 	}
@@ -151,20 +137,13 @@ class FilmControllerTest {
 	@DisplayName("Film get All")
 	@Test
 	void test8_getFilmAll() {
-
 		// пустой список
 		assertEquals("[]", httpTestClient.get(filmServerURL));
-
 		httpTestClient.post(filmServerURL, filmJsonValid);
-
 		httpTestClient.get(filmServerURL);
 		assertEquals(200, httpTestClient.getLastResponseStatusCode());
-
 		// тест работы getAll
-		String jsonData = httpTestClient.response.body().replace("[", "").replace("]", "");
+		String jsonData = httpTestClient.getResponse().body().replace("[", "").replace("]", "");
 		assertEquals(filmJsonValidTestCreate, jsonData);
 	}
-
-
-
 }

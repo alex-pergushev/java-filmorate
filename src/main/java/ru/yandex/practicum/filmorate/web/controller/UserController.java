@@ -3,20 +3,16 @@ package ru.yandex.practicum.filmorate.web.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.db.model.User;
-
 import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/users")
 public class UserController {
-
 	private static final Logger log = LoggerFactory.getLogger(UserController.class);
 	private final Map<Integer, User> users = new HashMap<>();
 
@@ -27,67 +23,45 @@ public class UserController {
 
 	@PostMapping
 	public User create(@RequestBody @Valid User user) throws ValidationException {
-
 		if (users.containsKey(user.getId())) {
-			log.error("Пользователь с Id" + user.getId() + " уже зарегистрирован.");
-			throw new ValidationException("Пользователь с Id " +
-					user.getId() + " уже зарегистрирован.");
+			log.error("Пользователь с Id {} уже зарегистрирован.", user.getId());
+			throw new ValidationException(String.format("Пользователь с Id %s уже зарегистрирован.", user.getId()));
 		}
 		for (User someUser : users.values()) {
-			if (someUser.getEmail().equals(user.getEmail())) {
-				log.error("Пользователь с электронной почтой " +
-						user.getEmail() + " уже зарегистрирован.");
-				throw new ValidationException("Пользователь с электронной почтой " +
-						user.getEmail() + " уже зарегистрирован.");
-			}
-			if (someUser.getLogin().equals(user.getLogin())) {
-				log.error("Логин " +
-						user.getEmail() + " уже занят.");
-				throw new ValidationException("Логин " +
-						user.getEmail() + " уже занят.");
-			}
+			validationUser(user, someUser);
 		}
-
 		if (user.getId() <= 0) {
 			user.setId(generateNewId());
 		}
-
 		users.put(user.getId(), user);
-
 		log.debug("Добавлен новый пользователь: {}", user);
 		log.debug("Количество пользователей в текущий момент: {}", users.size());
-
 		return user;
 	}
 
-
+	private void validationUser(@RequestBody @Valid User user, User someUser) throws ValidationException {
+		if (someUser.getEmail().equals(user.getEmail())) {
+			log.error("Пользователь с электронной почтой {} уже зарегистрирован.", user.getEmail());
+			throw new ValidationException(String.format("Пользователь с электронной почтой %s уже зарегистрирован.", user.getEmail()));
+		}
+		if (someUser.getLogin().equals(user.getLogin())) {
+			log.error("Логин {} уже занят.", user.getLogin());
+			throw new ValidationException(String.format("Логин %s уже занят.", user.getLogin()));
+		}
+	}
 
 	@PutMapping
 	public User update(@Valid @RequestBody User user) throws ValidationException {
-
 		if (users.containsKey(user.getId())) {
 			for (User someUser : users.values()) {
 				if (user.getId() != someUser.getId()) {
-					if (someUser.getEmail().equals(user.getEmail())) {
-						log.error("Пользователь с электронной почтой " +
-								user.getEmail() + " уже зарегистрирован.");
-						throw new ValidationException("Пользователь с электронной почтой " +
-								user.getEmail() + " уже зарегистрирован.");
-					}
-					if (someUser.getLogin().equals(user.getLogin())) {
-						log.error("Логин " +
-								user.getEmail() + " уже занят.");
-						throw new ValidationException("Логин " +
-								user.getEmail() + " уже занят.");
-					}
+					validationUser(user, someUser);
 				}
 			}
 		} else {
-			log.error("Пользователь с идентификатором " + user.getId() + " не зарегистрирован");
-			throw new ValidationException("Пользователь с идентификатором " +
-					user.getId() + " не зарегистрирован.");
+			log.error("Пользователь с идентификатором {} не зарегистрирован", user.getId());
+			throw new ValidationException(String.format("Пользователь с идентификатором %s не зарегистрирован.", user.getId()));
 		}
-
 		users.replace(user.getId(), user);
 		log.debug("Изменен пользователь: {}", user);
 		return user;
@@ -104,5 +78,4 @@ public class UserController {
 		}
 		return resultate;
 	}
-
 }

@@ -8,11 +8,8 @@ import ru.yandex.practicum.filmorate.FilmorateApplication;
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserControllerTest {
-
 	private final String userServerURL = "http://localhost:8080/users";
-
 	private static HttpTestClient httpTestClient;
-
 	private static ConfigurableApplicationContext context;
 
 	@BeforeAll
@@ -84,28 +81,23 @@ class UserControllerTest {
 	@DisplayName("User create")
 	@Test
 	void test9_createUser() {
-
 		httpTestClient.post(userServerURL, userJson);
 		assertEquals(200, httpTestClient.getLastResponseStatusCode());
-
 		// тест создание пользователя
-		String jsonData = httpTestClient.response.body();
+		String jsonData = httpTestClient.getResponse().body();
 		assertEquals(userJsonTestCreate, jsonData);
 	}
 
 	@DisplayName("User create Fail login")
 	@Test
 	void test10_createUserFailLogin() {
-
 		httpTestClient.post(userServerURL, userJsonFailLogin);
 		assertEquals(400, httpTestClient.getLastResponseStatusCode());
-
 	}
 
 	@DisplayName("User create Fail email")
 	@Test
 	void test11_createUserFailEmail() {
-
 		httpTestClient.post(userServerURL, userJsonFailEmail);
 		assertEquals(400, httpTestClient.getLastResponseStatusCode());
 	}
@@ -113,7 +105,6 @@ class UserControllerTest {
 	@DisplayName("User create Fail birthday")
 	@Test
 	void test12_createUserFailBirthday() {
-
 		httpTestClient.post(userServerURL, userJsonFailBirthday);
 		assertEquals(400, httpTestClient.getLastResponseStatusCode());
 	}
@@ -121,54 +112,41 @@ class UserControllerTest {
 	@DisplayName("User update")
 	@Test
 	void test13_updateUser() {
-
 		httpTestClient.post(userServerURL, userJson);
-
 		httpTestClient.put(userServerURL, userJsonUpdate);
 		assertEquals(200, httpTestClient.getLastResponseStatusCode());
-
 		// тест обновления фильма
-		String jsonData = httpTestClient.response.body();
+		String jsonData = httpTestClient.getResponse().body();
 		assertEquals(userJsonUpdate, jsonData);
 	}
 
 	@DisplayName("User update unknown")
 	@Test
 	void test14_updateUserUnknown() {
-
 		httpTestClient.put(userServerURL, userJsonUpdate);
 		assertEquals(500, httpTestClient.getLastResponseStatusCode());
-
 	}
 
 	@DisplayName("User get All")
 	@Test
 	void test15_getUserAll() {
-
 		// пустой список
 		assertEquals("[]", httpTestClient.get(userServerURL));
-
 		httpTestClient.post(userServerURL, userJson);
-
 		httpTestClient.get(userServerURL);
 		assertEquals(200, httpTestClient.getLastResponseStatusCode());
-
 		// тест работы getAll
-		String jsonData = httpTestClient.response.body().replace("[", "").replace("]", "");
+		String jsonData = httpTestClient.getResponse().body().replace("[", "").replace("]", "");
 		assertEquals(userJsonTestCreate, jsonData);
-
 	}
 
 	@DisplayName("Create user with empty name")
 	@Test
 	void test16_createUserWithEmptyName() {
-
 		httpTestClient.post(userServerURL, userJsonWithEmptyName);
 		assertEquals(200, httpTestClient.getLastResponseStatusCode());
-
 		// тест создание пользователя
-		String jsonData = httpTestClient.response.body();
+		String jsonData = httpTestClient.getResponse().body();
 		assertEquals(userJsonWithEmptyNameTestCreate, jsonData);
 	}
-
 }

@@ -6,16 +6,17 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 public class HttpTestClient {
 
-	int lastResponseStatusCode;
-	HttpResponse<String> response;
+	private int lastResponseStatusCode;
+	private HttpResponse<String> response;
 
 	public int getLastResponseStatusCode() {
 		return lastResponseStatusCode;
+	}
+
+	public HttpResponse<String> getResponse() {
+		return response;
 	}
 
 	//Вспомогательный метод для отправки GET запроса
@@ -26,7 +27,6 @@ public class HttpTestClient {
 				.uri(URI.create(url))
 				.GET()
 				.build();
-
 		try {
 			response = client.send(request, HttpResponse.BodyHandlers.ofString());
 			lastResponseStatusCode = response.statusCode();
@@ -34,7 +34,6 @@ public class HttpTestClient {
 		} catch (IOException | InterruptedException e) { // обрабатываем ошибки отправки запроса
 			System.out.println("Во время выполнения запроса \"" + url + "\" возникла ошибка: " + e.getMessage());
 		}
-
 		return "";
 	}
 
@@ -47,7 +46,6 @@ public class HttpTestClient {
 				.headers("Content-Type", "application/json")
 				.POST(HttpRequest.BodyPublishers.ofString(body))
 				.build();
-
 		try {
 			response = client.send(request, HttpResponse.BodyHandlers.ofString());
 			lastResponseStatusCode = response.statusCode();
@@ -65,7 +63,6 @@ public class HttpTestClient {
 				.headers("Content-Type", "application/json")
 				.PUT(HttpRequest.BodyPublishers.ofString(body))
 				.build();
-
 		try {
 			response = client.send(request, HttpResponse.BodyHandlers.ofString());
 			lastResponseStatusCode = response.statusCode();
