@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.web.controller;
+package ru.yandex.practicum.filmorate.controller;
 
 import java.io.IOException;
 import java.net.URI;

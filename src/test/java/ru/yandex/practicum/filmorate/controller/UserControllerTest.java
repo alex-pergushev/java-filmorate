@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.web.controller;
+package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.*;
 import org.springframework.boot.SpringApplication;
@@ -38,7 +38,8 @@ class UserControllerTest {
             "\"email\":\"alex@pergushev.ru\"," +
             "\"login\":\"pergushev\"," +
             "\"name\":\"Alex\"," +
-            "\"birthday\":\"1976-06-07\"}";
+            "\"birthday\":\"1976-06-07\"," +
+            "\"friends\":null}";
 
     static final String userJsonFailLogin = "{" +
             "\"email\":\"alex@pergushev.ru\"," +
@@ -63,7 +64,8 @@ class UserControllerTest {
             "\"email\":\"kirill@pergushev.ru\"," +
             "\"login\":\"pergushev\"," +
             "\"name\":\"Kirill\"," +
-            "\"birthday\":\"2014-11-04\"}";
+            "\"birthday\":\"2014-11-04\"," +
+            "\"friends\":null}";
 
     static final String userJsonWithEmptyName = "{" +
             "\"email\":\"alex@pergushev.ru\"," +
@@ -76,7 +78,8 @@ class UserControllerTest {
             "\"email\":\"alex@pergushev.ru\"," +
             "\"login\":\"pergushev\"," +
             "\"name\":\"pergushev\"," +
-            "\"birthday\":\"1976-06-07\"}";
+            "\"birthday\":\"1976-06-07\"," +
+            "\"friends\":null}";
 
     @DisplayName("User create")
     @Test
@@ -92,21 +95,21 @@ class UserControllerTest {
     @Test
     void test10_createUserFailLogin() {
         httpTestClient.post(userServerURL, userJsonFailLogin);
-        assertEquals(400, httpTestClient.getLastResponseStatusCode());
+        assertEquals(500, httpTestClient.getLastResponseStatusCode());
     }
 
     @DisplayName("User create Fail email")
     @Test
     void test11_createUserFailEmail() {
         httpTestClient.post(userServerURL, userJsonFailEmail);
-        assertEquals(400, httpTestClient.getLastResponseStatusCode());
+        assertEquals(500, httpTestClient.getLastResponseStatusCode());
     }
 
     @DisplayName("User create Fail birthday")
     @Test
     void test12_createUserFailBirthday() {
         httpTestClient.post(userServerURL, userJsonFailBirthday);
-        assertEquals(400, httpTestClient.getLastResponseStatusCode());
+        assertEquals(500, httpTestClient.getLastResponseStatusCode());
     }
 
     @DisplayName("User update")
@@ -124,7 +127,7 @@ class UserControllerTest {
     @Test
     void test14_updateUserUnknown() {
         httpTestClient.put(userServerURL, userJsonUpdate);
-        assertEquals(500, httpTestClient.getLastResponseStatusCode());
+        assertEquals(404, httpTestClient.getLastResponseStatusCode());
     }
 
     @DisplayName("User get All")
@@ -149,4 +152,16 @@ class UserControllerTest {
         String jsonData = httpTestClient.getResponse().body();
         assertEquals(userJsonWithEmptyNameTestCreate, jsonData);
     }
+
+    @DisplayName("User get 2 friends")
+    @Test
+    void test17_UserGetTwoFriends() {
+        httpTestClient.post(userServerURL, userJsonWithEmptyName);
+        assertEquals(200, httpTestClient.getLastResponseStatusCode());
+        // тест создание пользователя
+        String jsonData = httpTestClient.getResponse().body();
+        assertEquals(userJsonWithEmptyNameTestCreate, jsonData);
+    }
+
+
 }
