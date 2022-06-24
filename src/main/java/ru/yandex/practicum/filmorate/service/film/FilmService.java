@@ -10,12 +10,6 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/*
- * который будет отвечать за операции с фильмами, — добавление и удаление лайка,
- * вывод 10 наиболее популярных фильмов по количеству лайков. Пусть пока каждый
- * пользователь может поставить лайк фильму только один раз.
- * */
-
 @Service
 public class FilmService {
 
@@ -49,7 +43,7 @@ public class FilmService {
         }
     }
 
-    public void deleteLikesFilm(int filmId, int userId) {
+    public void deleteLikesFilm(Integer filmId, Integer userId) {
         Film film = filmStorage.findFilmById(filmId);
         User user = userStorage.findUserById(userId);
 
@@ -71,9 +65,9 @@ public class FilmService {
         List<Film> films = filmStorage.findAll();
         return films.stream()
                 .sorted((film1, film2) -> Integer.compare((film2 == null ||
-                film2.getLikes() == null) ? 0 : film2.getLikes().size(),
-                (film1 == null ||
-                        film1.getLikes() == null) ? 0 : film1.getLikes().size()))
+                                film2.getLikes() == null) ? 0 : film2.getLikes().size(),
+                                (film1 == null ||
+                                film1.getLikes() == null) ? 0 : film1.getLikes().size()))
                 .limit(count)
                 .collect(Collectors.toList());
     }

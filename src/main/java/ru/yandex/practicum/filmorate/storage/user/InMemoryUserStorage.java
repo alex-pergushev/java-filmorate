@@ -71,9 +71,10 @@ public class InMemoryUserStorage extends InMemoryDataStorage<User> implements Us
     }
 
     @Override
-    public void deleteUser(int id) {
+    public void deleteUser(Integer id) {
         if (data.containsKey(id)) {
             data.remove(id);
+            log.info("Удален пользователь с идентификатором {}", id);
         } else {
             log.error("Пользователь с идентификатором {} не зарегистрирован", id);
             throw new UserNotFoundException(String
@@ -82,16 +83,17 @@ public class InMemoryUserStorage extends InMemoryDataStorage<User> implements Us
     }
 
     @Override
-    public User findUserById(int id) {
-        if (!data.containsKey(id)) {
+    public User findUserById(Integer id) {
+        if (data.containsKey(id)) {
+            return data.get(id);
+        } else {
             log.error(String.format("Пользователь с идентификатором %d не зарегистрирован", id));
             throw new UserNotFoundException(String.format("Пользователь с идентификатором %d не зарегистрирован", id));
         }
-        return data.get(id);
     }
 
     @Override
-    public List<User> getUserFriends(int userId) {
+    public List<User> getUserFriends(Integer userId) {
 
         List<User> result = new ArrayList<>();
 

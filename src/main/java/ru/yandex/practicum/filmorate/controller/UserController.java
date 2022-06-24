@@ -2,9 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import java.util.Collection;
 import java.util.List;
-
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.user.UserService;
 import javax.validation.Valid;
@@ -31,14 +29,14 @@ public class UserController {
     }
 
     // добавление в друзья
-    @PutMapping(value =  "/{id}/friends/{friendId}")
-    public void addToFriends(@PathVariable("id") int userId, @PathVariable int friendId) {
+    @PutMapping(value = "/{id}/friends/{friendId}")
+    public void addToFriends(@PathVariable("id") Integer userId, @PathVariable Integer friendId) {
         userService.addToFriends(userId, friendId);
     }
 
     // удаление из друзей
-    @DeleteMapping(value =  "/{id}/friends/{friendId}")
-    public void deleteFromFriends(@PathVariable("id") int userId, @PathVariable int friendId) {
+    @DeleteMapping(value = "/{id}/friends/{friendId}")
+    public void deleteFromFriends(@PathVariable("id") Integer userId, @PathVariable Integer friendId) {
         userService.deleteFromFriends(userId, friendId);
     }
 
@@ -48,24 +46,20 @@ public class UserController {
     }
 
     // получать данные о пользователях по их уникальному идентификатору
-    @GetMapping(value =  "/{id}")
-    public User findUserById(@PathVariable("id") int userId) {
+    @GetMapping(value = "/{id}")
+    public User findUserById(@PathVariable("id") Integer userId) {
         return userService.findUserById(userId);
     }
 
     // возвращаем список пользователей, являющихся его друзьями.
-    @GetMapping(value =  "/{id}/friends")
-    public List<User> getUserFriends(@PathVariable("id") int userId) {
+    @GetMapping(value = "/{id}/friends")
+    public List<User> getUserFriends(@PathVariable("id") Integer userId) {
         return userService.getUserFriends(userId);
     }
 
     // список друзей, общих с другим пользователем
-    @GetMapping(value =  "/{id}/friends/common/{otherId}")
-    public Collection<User> getCommonFriends(@PathVariable("id") int userId, @PathVariable int otherId) {
-        return userService.getCommonFriends(userId, otherId);
+    @GetMapping(value = "/{id}/friends/common/{otherId}")
+    public List<User> getCommonFriends(@PathVariable("id") Integer userId, @PathVariable Integer otherId) {
+        return userService.getFriendsMutual(userId, otherId);
     }
-
-
-
-
 }

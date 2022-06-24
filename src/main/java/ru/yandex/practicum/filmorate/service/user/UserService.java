@@ -1,18 +1,15 @@
 package ru.yandex.practicum.filmorate.service.user;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-/*
-который будет отвечать за такие операции с пользователями, как добавление в друзья,
-удаление из друзей, вывод списка общих друзей. Пока пользователям не надо одобрять заявки
-в друзья — добавляем сразу. То есть если Лена стала другом Саши, то это значит, что Саша
-теперь друг Лены.
-*/
 
 @Service
 public class UserService {
@@ -36,11 +33,11 @@ public class UserService {
         return userStorage.findAll();
     }
 
-    public User findUserById(int id) {
+    public User findUserById(Integer id) {
         return userStorage.findUserById(id);
     }
 
-    public void addToFriends(int userId, int friendId) {
+    public void addToFriends(Integer userId, Integer friendId) {
         User user = userStorage.findUserById(userId);
         User friend = userStorage.findUserById(friendId);
 
@@ -59,7 +56,7 @@ public class UserService {
         }
     }
 
-    public void deleteFromFriends(int userId, int friendId) {
+    public void deleteFromFriends(Integer userId, Integer friendId) {
         User user = userStorage.findUserById(userId);
         User friend = userStorage.findUserById(friendId);
 
@@ -71,21 +68,22 @@ public class UserService {
         }
     }
 
-    public List<User> getUserFriends(int userId) {
+    public List<User> getUserFriends(Integer userId) {
         return userStorage.getUserFriends(userId);
     }
 
-    public List<User> getCommonFriends(int userId, int otherId) {
+    public List<User> getFriendsMutual(Integer userId, Integer otherId) {
         User user = userStorage.findUserById(userId);
         User otherUser = userStorage.findUserById(otherId);
 
         List<User> result = new ArrayList<>();
 
         if (user.getFriends() != null && otherUser.getFriends() != null) {
-            Set<Integer> common =  user.getFriends();
-            common.retainAll(otherUser.getFriends());
-            for (Integer id : common) {
-                result.add(userStorage.findUserById(id));
+
+            for (Integer id : user.getFriends()) {
+                if (otherUser.getFriends().contains(id)) {
+                    result.add(userStorage.findUserById(id));
+                }
             }
         }
         return result;
