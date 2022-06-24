@@ -20,11 +20,7 @@ public class InMemoryFilmStorage extends InMemoryDataStorage<Film> implements Fi
 
     @Override
     public Film create(Film film) {
-        if (film.getReleaseDate().isBefore(BIRTHDAY_CINEMA)) {
-            log.error("Дата релиза — не может быть раньше 28 декабря 1895 года.");
-            throw new ValidationException("Дата релиза — не может быть раньше 28 декабря 1895 года.");
-        }
-        if (data.containsKey(film.getId())) {
+         if (data.containsKey(film.getId())) {
             log.error("Фильм с Id {} уже добавлен.", film.getId());
             throw new FilmAlreadyExistException(String.format("Фильм с Id %s уже добавлен.", film.getId()));
         }
@@ -39,10 +35,7 @@ public class InMemoryFilmStorage extends InMemoryDataStorage<Film> implements Fi
 
     @Override
     public Film update(Film film) {
-        if (film.getReleaseDate().isBefore(BIRTHDAY_CINEMA)) {
-            log.error("Дата релиза — не может быть раньше 28 декабря 1895 года.");
-            throw new ValidationException("Дата релиза — не может быть раньше 28 декабря 1895 года.");
-        }
+        validateFilm(film);
         if (data.containsKey(film.getId())) {
             data.replace(film.getId(), film);
             log.info("Обновлен фильм: {}", film);
@@ -54,6 +47,10 @@ public class InMemoryFilmStorage extends InMemoryDataStorage<Film> implements Fi
     }
 
     private void validateFilm(Film film) {
+        if (film.getReleaseDate().isBefore(BIRTHDAY_CINEMA)) {
+            log.error("Дата релиза — не может быть раньше 28 декабря 1895 года.");
+            throw new ValidationException("Дата релиза — не может быть раньше 28 декабря 1895 года.");
+        }
         for (Film someFilm : data.values()) {
             if (someFilm.getName().equals(film.getName())
                     && (someFilm.getReleaseDate() == null && film.getReleaseDate() == null
