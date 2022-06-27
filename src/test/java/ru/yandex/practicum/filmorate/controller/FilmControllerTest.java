@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.web.controller;
+package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.DisplayName;
@@ -28,31 +28,49 @@ class FilmControllerTest {
         context.close();
     }
 
+    // фильм для вставки
     static final String filmJsonValid = "{" +
             "\"name\":\"Ленин в Октябре\"," +
             "\"description\":\"Валидный пример фильма\"," +
             "\"releaseDate\":\"1937-06-07\"," +
             "\"duration\":90}";
 
+
     static final String filmJsonValidTestCreate = "{" +
             "\"id\":1," +
             "\"name\":\"Ленин в Октябре\"," +
             "\"description\":\"Валидный пример фильма\"," +
             "\"releaseDate\":\"1937-06-07\"," +
-            "\"duration\":90}";
+            "\"duration\":90," +
+            "\"likes\":null}";
 
+    // фильм для проверки обновления
     static final String filmJsonUpdate = "{" +
             "\"id\":1," +
             "\"name\":\"Ленин в Ноябре, или в Декабре.\"," +
             "\"description\":\"Обновление фильма\"," +
             "\"releaseDate\":\"2021-06-07\"," +
-            "\"duration\":120}";
+            "\"duration\":120," +
+            "\"likes\":null}";
 
+
+    // фильм для проверки обновления несуществующего фильма
+    static final String filmJsonUpdate1 = "{" +
+            "\"id\":100," +
+            "\"name\":\"Ленин в Ноябре, или в Декабре.\"," +
+            "\"description\":\"Обновление несуществующего фильма\"," +
+            "\"releaseDate\":\"2021-06-07\"," +
+            "\"duration\":120," +
+            "\"likes\":null}";
+
+    // пустое название
     static final String filmJsonEmptyTitle = "{" +
             "\"description\":\"Во время работы над фильмом закончились все буквы\"," +
             "\"releaseDate\":\"1976-06-07\"," +
-            "\"duration\":90}";
+            "\"duration\":90," +
+            "\"likes\":null}";
 
+    // длинное описание
     static final String filmJsonBigDescription = "{" +
             "\"name\":\"Ленин на броневике\"," +
             "\"description\":\"По воспоминаниям очевидцев, которые все-таки смогли что-то сохранить в своей памяти, " +
@@ -61,14 +79,28 @@ class FilmControllerTest {
             "что обдирают честных граждан. Единственным, что запомнилось почти всем присутствующим, " +
             "была последняя фраза, выкрикнутая вождем пролетариев: Да здравствует социалистическая революция!\"," +
             "\"releaseDate\":\"1967-04-24\"," +
-            "\"duration\":100}";
+            "\"duration\":100," +
+            "\"likes\":null}";
 
+    // слишком ранняя дата выхода фильма
     static final String filmJsonOldRelease = "{" +
             "\"name\":\"Политическая программа Ленина. Арест в 1895 году.\"," +
             "\"description\":\"Фильм вышедший на экраны ранее дня рождения кино\"," +
             "\"releaseDate\":\"1895-12-27\"," +
-            "\"duration\":60}";
+            "\"duration\":60," +
+            "\"likes\":null}";
 
+    // слишком ранняя дата выхода фильма проверка обновления
+    static final String filmJsonOldReleaseUpdate = "{" +
+            "\"name\":\"Политическая программа Ленина. Арест в 1895 году.\"," +
+            "\"description\":\"Фильм вышедший на экраны ранее дня рождения кино\"," +
+            "\"releaseDate\":\"1895-12-27\"," +
+            "\"duration\":60," +
+            "\"likes\":null}";
+
+
+
+    // отрицательная продолжительность
     static final String filmJsonNegativeDuration = "{" +
             "\"name\":\"Ленин в шалаше\"," +
             "\"description\":\"На съемки фильма ушло -1000 метров пленки\"," +
@@ -90,7 +122,7 @@ class FilmControllerTest {
     void test2_createFilmFailName() {
         // название не может быть пустым
         httpTestClient.post(filmServerURL, filmJsonEmptyTitle);
-        assertEquals(400, httpTestClient.getLastResponseStatusCode());
+        assertEquals(500, httpTestClient.getLastResponseStatusCode());
     }
 
     @DisplayName("Film create Fail description")
@@ -98,7 +130,7 @@ class FilmControllerTest {
     void test3_createFilmFailDesc() {
         // максимальная длина описания — 200 символов
         httpTestClient.post(filmServerURL, filmJsonBigDescription);
-        assertEquals(400, httpTestClient.getLastResponseStatusCode());
+        assertEquals(500, httpTestClient.getLastResponseStatusCode());
     }
 
     @DisplayName("Film create Fail release data")
@@ -106,7 +138,7 @@ class FilmControllerTest {
     void test4_createFilmFailReleaseData() {
         // дата релиза — не раньше 28 декабря 1895 года;
         httpTestClient.post(filmServerURL, filmJsonOldRelease);
-        assertEquals(500, httpTestClient.getLastResponseStatusCode());
+        assertEquals(400, httpTestClient.getLastResponseStatusCode());
     }
 
     @DisplayName("Film create Fail duration")
@@ -114,7 +146,7 @@ class FilmControllerTest {
     void test5_createFilmFailDuration() {
         // продолжительность фильма должна быть положительной
         httpTestClient.post(filmServerURL, filmJsonNegativeDuration);
-        assertEquals(400, httpTestClient.getLastResponseStatusCode());
+        assertEquals(500, httpTestClient.getLastResponseStatusCode());
     }
 
     @DisplayName("Film update")
@@ -132,7 +164,7 @@ class FilmControllerTest {
     @Test
     void test7_updateFilmUnknown() {
         httpTestClient.put(filmServerURL, filmJsonUpdate);
-        assertEquals(500, httpTestClient.getLastResponseStatusCode());
+        assertEquals(404, httpTestClient.getLastResponseStatusCode());
     }
 
     @DisplayName("Film get All")
