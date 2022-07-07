@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -29,19 +28,19 @@ public class Film {
     private int duration;
 
     // рейтинг Ассоциации кинокомпаний (англ. Motion Picture Association, сокращённо МРА)
-    private Category mpa;
+    private Rating rating;
 
     // жанры
     private List<Genre> genres;
 
     private Set<Integer> likes;
 
-    public Film(int id, String name, String description, LocalDate releaseDate, int duration, Category mpa) {
+    public Film(int id, String name, String description, LocalDate releaseDate, int duration, Rating rating) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
-        this.mpa = mpa;
+        this.rating = rating;
     }
 }
