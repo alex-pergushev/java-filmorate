@@ -20,47 +20,47 @@ ___
 
 Примеры обращения к данным.
 
-Получение списка друзей пользователя t_user:
+Получение списка друзей пользователя:
 ````SQL
 SELECT *
   FROM user AS u 
  WHERE u.user_id in (SELECT friend_id 
                        FROM friends AS f
-                      WHERE f.user_id = :t_user
+                      WHERE f.user_id = ?
                         AND f.status = 'CONFIRMED');
 ````
 
-Получение списка пользователей, отправивших запрос на добавление в друзья пользователя t_user:
+Получение списка пользователей, отправивших запрос на добавление в друзья пользователя:
 ````SQL
 SELECT *
   FROM user AS u 
  WHERE u.user_id in (SELECT friend_id 
                        FROM friends AS f
-                      WHERE f.user_id = :t_user
+                      WHERE f.user_id = ?
                         AND f.status = 'UNCONFIRMED');
 ````
 
-Получение жанров фильмов, которые нравятся пользователю t_user:
+Получение жанров фильмов, которые нравятся пользователю:
 ````SQL
 SELECT DISTINCT g.name AS genre_name
   FROM film AS f
   JOIN film_ganre AS fg ON (f.film_id = fg.film_id) 
   JOIN genre AS g ON (fg.genre_id = g.genre_id)
- WHERE f.film_id in (SELECT friend_id
+ WHERE f.film_id in (SELECT film_id
                        FROM likes AS l
-                      WHERE l.user_id = :t_user);
+                      WHERE l.user_id = ?);
 ````
 
-Получение общих друзей пользователей t_user_1 и t_user_2:
+Получение общих друзей пользователей user1 и user2:
 ````SQL
 SELECT *
   FROM user AS u
  WHERE u.user_id in (SELECT friend_id
                        FROM friends AS f
-                      WHERE f.user_id = :t_user_1
+                      WHERE f.user_id = user1_id
                         AND f.status = 'CONFIRMED')
    AND u.user_id in (SELECT friend_id
                        FROM friends f
-                      WHERE f.user_id = :t_user_2
+                      WHERE f.user_id = user2_id
                         AND f.status = 'CONFIRMED');
 ````
