@@ -11,7 +11,7 @@ import javax.validation.Valid;
 @RequestMapping(value = "/users")
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
 
     @Autowired
     public UserController(UserService userService) {
@@ -60,6 +60,6 @@ public class UserController {
     // список друзей, общих с другим пользователем
     @GetMapping(value = "/{id}/friends/common/{otherId}")
     public List<User> getCommonFriends(@PathVariable("id") Integer userId, @PathVariable Integer otherId) {
-        return userService.getFriendsMutual(userId, otherId);
+        return userService.getCommonFriends(userId, otherId);
     }
 }
