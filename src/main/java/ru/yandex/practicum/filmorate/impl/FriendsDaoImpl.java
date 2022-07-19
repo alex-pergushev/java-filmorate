@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
@@ -15,9 +14,8 @@ import java.util.List;
 
 //дружеские связи между пользователями
 @Repository
+@Slf4j
 public class FriendsDaoImpl implements EntityLinkDao<Integer>{
-
-    protected static final Logger log = LoggerFactory.getLogger(FriendsDaoImpl.class);
 
     private final JdbcTemplate jdbcTemplate;
     private final UserDbStorage userDbStorage;

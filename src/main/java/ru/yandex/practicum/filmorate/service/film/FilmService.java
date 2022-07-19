@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.service.film;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -15,9 +14,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@Slf4j
 public class FilmService {
 
-    private final Logger log = LoggerFactory.getLogger(FilmService.class);
     private static final LocalDate RELEASE_NOT_EARLIER = LocalDate.of(1895, 12, 28);
 
     private final UserStorage userStorage;

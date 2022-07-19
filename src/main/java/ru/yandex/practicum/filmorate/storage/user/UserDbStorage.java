@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -21,9 +20,8 @@ import java.util.List;
 // реализация интерфейса для работы с хранилищем пользователей
 @Component("UserDbStorage")
 @Repository
+@Slf4j
 public class UserDbStorage implements UserStorage {
-
-    private static final Logger log = LoggerFactory.getLogger(UserDbStorage.class);
 
     private final JdbcTemplate jdbcTemplate;
 

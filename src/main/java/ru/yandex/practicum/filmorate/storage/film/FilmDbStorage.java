@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -25,9 +24,10 @@ import java.util.List;
 // реализация интерфейса для работы с хранилищем фильмов
 @Component("FilmDbStorage")
 @Repository
+@Slf4j
 public class FilmDbStorage implements FilmStorage {
 
-    protected static final Logger log = LoggerFactory.getLogger(FilmDbStorage.class);
+    private final String SQL_GET_MOST_POPULAR = "SELECT * FROM films AS f ORDER BY (SELECT count(*) FROM likes AS l WHERE l.film_id = f.film_id) DESC";
 
     private final LikeDaoImpl likeDaoImpl;
     private final FilmGenreDaoImpl filmGenreDaoImpl;
@@ -164,12 +164,11 @@ public class FilmDbStorage implements FilmStorage {
     public List<Film> getMostPopular(Integer count) {
         List<Film> result = new ArrayList<>();
         SqlRowSet filmRows;
-        String sql = "SELECT * FROM films AS f ORDER BY (SELECT count(*) FROM likes AS l WHERE l.film_id = f.film_id) DESC";
 
         if (count == null || count == 0) {
-            filmRows = jdbcTemplate.queryForRowSet(sql);
+            filmRows = jdbcTemplate.queryForRowSet(SQL_GET_MOST_POPULAR);
         } else {
-            filmRows = jdbcTemplate.queryForRowSet(sql + " LIMIT ?", count);
+            filmRows = jdbcTemplate.queryForRowSet(SQL_GET_MOST_POPULAR + " LIMIT ?", count);
         }
 
         while (filmRows.next()) {
