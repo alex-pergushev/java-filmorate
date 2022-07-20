@@ -26,10 +26,11 @@ public class LikeDaoImpl implements EntityLinkDao<Integer> {
     public void create(Integer userId, Integer filmId) {
         try {
             jdbcTemplate.update("INSERT INTO likes (user_id, film_id) VALUES (?, ?)", userId, filmId);
-            log.info("Пользователь с идентификатором {} поставил лайк фильму с идентификатором {}", userId, filmId);
+            log.info("Пользователь с идентификатором \'{}\' поставил лайк фильму с идентификатором \'{}\'",
+                    userId, filmId);
         } catch (DuplicateKeyException e) {
-            String errorMessage = String.format("Пользователь с идентификатором %d " +
-                    "уже отмечал лайком фильм с идентификатором %d", userId, filmId);
+            String errorMessage = String.format("Пользователь с идентификатором \'%d\' " +
+                    "уже отмечал лайком фильм с идентификатором \'%d\'", userId, filmId);
             log.error(errorMessage);
             throw new EntityAlreadyExistException(errorMessage);
         }
@@ -44,7 +45,8 @@ public class LikeDaoImpl implements EntityLinkDao<Integer> {
             log.error(errorMessage);
             throw new EntityNotFoundException(errorMessage);
         } else {
-            log.info("Удален лайк пользователя с идентификатором {} фильму с идентификатором {}", userId, filmId);
+            log.info("Удален лайк пользователя с идентификатором \'{}\' фильму с идентификатором \'{}\'",
+                    userId, filmId);
         }
     }
 

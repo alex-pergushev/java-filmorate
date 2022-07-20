@@ -27,7 +27,8 @@ import java.util.List;
 @Slf4j
 public class FilmDbStorage implements FilmStorage {
 
-    private final String SQL_GET_MOST_POPULAR = "SELECT * FROM films AS f ORDER BY (SELECT count(*) FROM likes AS l WHERE l.film_id = f.film_id) DESC";
+    private final String SQL_GET_MOST_POPULAR = "SELECT * FROM films AS f ORDER BY (SELECT count(*) " +
+            "FROM likes AS l WHERE l.film_id = f.film_id) DESC";
 
     private final LikeDaoImpl likeDaoImpl;
     private final FilmGenreDaoImpl filmGenreDaoImpl;
@@ -58,7 +59,7 @@ public class FilmDbStorage implements FilmStorage {
             }, keyHolder);
 
             film.setId(keyHolder.getKey().intValue());
-            log.info("Создан фильм: " + film);
+            log.info("Создан фильм с идентификатором \'{}\'", film.getId());
             if (film.getGenres() != null)
                 filmGenreDaoImpl.merge(film.getId(), film.getGenres());
             return film;
@@ -89,7 +90,7 @@ public class FilmDbStorage implements FilmStorage {
                 film.setGenres(filmGenreDaoImpl.getFilmGenres(film.getId()));
             }
 
-            log.info("Обновлен фильм: " + film);
+            log.info("Обновлен фильм с идентификатором \'{}\'", film.getId());
             return film;
         }catch (DuplicateKeyException e){
             mapDuplicateFilmException(film, e);
@@ -151,13 +152,15 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public void addLike(Film film, User user) {
         likeDaoImpl.create(user.getId(), film.getId());
-        log.info("Фильму \'{}\' добавлен лайк пользователем \'{}\'", film.getName(), user.getName());
+        log.info("Фильму с идентификатором \'{}\' добавлен лайк пользователем с идентификатором \'{}\'",
+                film.getId(), user.getId());
     }
 
     @Override
     public void deleteLike(Film film, User user) {
         likeDaoImpl.delete(user.getId(), film.getId());
-        log.info("Пользователь \'{}\' удалил лайк у фильма \'{}\'", user.getName(), film.getName());
+        log.info("Пользователь с идентификатором \'{}\' удалил лайк у фильма с идентификатором \'{}\'",
+                user.getId(), film.getId());
     }
 
     @Override

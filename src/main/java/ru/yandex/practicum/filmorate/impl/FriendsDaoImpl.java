@@ -32,7 +32,8 @@ public class FriendsDaoImpl implements EntityLinkDao<Integer>{
         User friend = userDbStorage.findUserById(friendId);
 
         jdbcTemplate.update("MERGE INTO friends AS f KEY (user_id, friend_id) VALUES (?, ?)", userId, friendId);
-        log.info("Пользователь \'{}\' добавил в друзья пользователя \'{}\'", user.getName(), friend.getName());
+        log.info("Пользователь с идентификатором \'{}\' добавил в друзья пользователя с идентификатором \'{}\'",
+                user.getId(), friend.getId());
     }
 
     @Override
@@ -40,15 +41,17 @@ public class FriendsDaoImpl implements EntityLinkDao<Integer>{
         User user = userDbStorage.findUserById(userId);
         User friend = userDbStorage.findUserById(friendId);
 
-        Integer item = jdbcTemplate.update("DELETE FROM friends WHERE friend_id = ? AND user_id = ?", friendId, userId);
+        Integer item = jdbcTemplate.update("DELETE FROM friends WHERE friend_id = ? AND user_id = ?",
+                friendId, userId);
 
         if (item == null || item == 0) {
-            String errorMessage = String.format("Между пользователем \'%s\' " +
-                    "и пользователем \'%s\' дружба не зарегистрирована", user.getName(), friend.getName());
+            String errorMessage = String.format("Между пользователем с идентификатором \'%d\' и пользователем " +
+                            "с идентификатором \'%d\' дружба не зарегистрирована", user.getId(), friend.getId());
             log.error(errorMessage);
             throw new EntityNotFoundException(errorMessage);
         } else {
-            log.info("Пользователь \'{}\' отменил дружбу с пользователем \'{}\'", user.getName(), friend.getName());
+            log.info("Пользователь с идентификатором \'{}\' отменил дружбу с пользователем с идентификатором \'{}\'",
+                    user.getId(), friend.getId());
         }
     }
 

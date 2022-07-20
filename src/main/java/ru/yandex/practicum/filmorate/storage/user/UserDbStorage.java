@@ -45,7 +45,7 @@ public class UserDbStorage implements UserStorage {
             }, keyHolder);
 
             user.setId(keyHolder.getKey().intValue());
-            log.info("Создан пользователь: {}", user);
+            log.info("Создан пользователь с идентификатором \'{}\'", user.getId());
             return user;
         } catch (DuplicateKeyException e) {
             mapDuplicateUserException(user, e);
@@ -56,17 +56,20 @@ public class UserDbStorage implements UserStorage {
     private void mapDuplicateUserException(User user, DuplicateKeyException e) {
         if (e.toString().contains("IDX_USER_EMAIL")) {
             log.error(String.format("Пользователь с email \'%s\' уже существует", user.getEmail()));
-            throw new UserAlreadyExistException(String.format("Пользователь с email \'%s\' уже существует", user.getEmail()));
+            throw new UserAlreadyExistException(String.format("Пользователь с email \'%s\' уже существует",
+                    user.getEmail()));
         }
 
         if (e.toString().contains("IDX_USER_LOGIN")) {
             log.error(String.format("Пользователь с логином \'%s\' уже существует", user.getLogin()));
-            throw new UserAlreadyExistException(String.format("Пользователь с логином \'%s\' уже существует", user.getLogin()));
+            throw new UserAlreadyExistException(String.format("Пользователь с логином \'%s\' уже существует",
+                    user.getLogin()));
         }
 
         if (e.toString().contains("PK_USERS")) {
             log.error(String.format("Пользователь с идентификатором \'%d\' уже существует", user.getId()));
-            throw new UserAlreadyExistException(String.format("Пользователь с идентификатором \'%d\' уже существует", user.getId()));
+            throw new UserAlreadyExistException(String.format("Пользователь с идентификатором \'%d\' уже существует",
+                    user.getId()));
         }
     }
 
@@ -82,7 +85,7 @@ public class UserDbStorage implements UserStorage {
                     user.getBirthday(),
                     user.getId());
 
-            log.info("Изменен пользователь \'{}\'", user);
+            log.info("Изменен пользователь с идентификатором \'{}\'", user.getId());
             return user;
         } catch (DuplicateKeyException e) {
             mapDuplicateUserException(user, e);
@@ -130,11 +133,11 @@ public class UserDbStorage implements UserStorage {
                 return user;
             } else {
                 log.error("Пользователь с идентификатором \'{}\' не найден", id);
-                throw new UserNotFoundException(String.format("Пользователь с идентификатором %d не найден", id));
+                throw new UserNotFoundException(String.format("Пользователь с идентификатором \'%d\' не найден", id));
             }
         } catch (EmptyResultDataAccessException e) {
             log.error("Пользователь с идентификатором \'{}\' не найден", id);
-            throw new UserNotFoundException(String.format("Пользователь с идентификатором %d не найден", id));
+            throw new UserNotFoundException(String.format("Пользователь с идентификатором \'%d\' не найден", id));
         }
     }
 
@@ -162,7 +165,8 @@ public class UserDbStorage implements UserStorage {
         User friend = findUserById(friendId);
 
         jdbcTemplate.update("MERGE INTO friends KEY (user_id, friend_id) VALUES (?, ?)", userId, friendId);
-        log.info("Пользователь \'{}\' добавил в друзья \'{}\' ", user.getName(), friend.getName());
+        log.info("Пользователь с идентификатором \'{}\' добавил в друзья пользователя  с идентификатором \'{}\'",
+                user.getId(), friend.getId());
 
     }
 
@@ -173,9 +177,11 @@ public class UserDbStorage implements UserStorage {
         User friend = findUserById(friendId);
         try {
             jdbcTemplate.update("DELETE FROM friends WHERE friend_id = ? AND user_id = ?", friendId, userId);
-            log.info("Пользователь \'{}\' удалил из друзей \'{}\' ", user.getName(), friend.getName());
+            log.info("Пользователь с идентификатором \'{}\' удалил из друзей пользователя  с идентификатором \'{}\'",
+                    user.getId(), friend.getId());
         } catch (EmptyResultDataAccessException e) {
-            log.error("Между пользователем \'{}\' и пользователем \'{}\' дружба не зарегистрирована", user.getName(), friend.getName());
+            log.error("Между пользователем с идентификатором \'{}\' и пользователем " +
+                    "с идентификатором \'{}\' дружба не зарегистрирована", user.getId(), friend.getId());
         }
     }
 
