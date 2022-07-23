@@ -1,55 +1,65 @@
 package ru.yandex.practicum.filmorate.service.film;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
+@Slf4j
 public class FilmService {
 
-    private UserStorage userStorage;
-    private FilmStorage filmStorage;
+    private static final LocalDate RELEASE_NOT_EARLIER = LocalDate.of(1895, 12, 28);
+
+    private final UserStorage userStorage;
+    private final FilmStorage filmStorage;
 
 
     @Autowired
-    public FilmService(UserStorage userStorage, FilmStorage filmStorage) {
+    public FilmService(@Qualifier("UserDbStorage") UserStorage userStorage,
+                       @Qualifier("FilmDbStorage") FilmStorage filmStorage) {
         this.userStorage = userStorage;
         this.filmStorage = filmStorage;
     }
 
     public Film create(Film film) {
+        checkReleaseDate(film);
         return filmStorage.create(film);
     }
 
     public Film update(Film film) {
+        checkReleaseDate(film);
         return filmStorage.update(film);
+    }
+
+    private void checkReleaseDate(Film film) {
+        if (RELEASE_NOT_EARLIER.isAfter(film.getReleaseDate())) {
+            log.error("Дата выхода фильма на экраны не может быть раньше \'28.12.1895 года\'");
+            throw new ValidationException(String
+                    .format("Дата выхода фильма на экраны не может быть раньше \'28.12.1895 года\'"));
+        }
     }
 
     public void addLikesFilm(Integer filmId, Integer userId) {
         Film film = filmStorage.findFilmById(filmId);
         User user = userStorage.findUserById(userId);
 
-        if (film != null && user != null) {
-            if (film.getLikes() == null) {
-                film.setLikes(new HashSet<>());
-            }
-            film.getLikes().add(user.getId());
-        }
+        filmStorage.addLike(film, user);
     }
 
     public void deleteLikesFilm(Integer filmId, Integer userId) {
         Film film = filmStorage.findFilmById(filmId);
         User user = userStorage.findUserById(userId);
 
-        if (film != null && user != null && film.getLikes().contains(user.getId())) {
-            film.getLikes().remove(user.getId());
-        }
+        filmStorage.deleteLike(film, user);
     }
 
     public List<Film> findAll() {
@@ -61,14 +71,7 @@ public class FilmService {
     }
 
     //Получение списка наиболее популярных фильмов
-    public List<Film> getTopTenFilm(int count) {
-        List<Film> films = filmStorage.findAll();
-        return films.stream()
-                .sorted((film1, film2) -> Integer.compare((film2 == null ||
-                                film2.getLikes() == null) ? 0 : film2.getLikes().size(),
-                                (film1 == null ||
-                                film1.getLikes() == null) ? 0 : film1.getLikes().size()))
-                .limit(count)
-                .collect(Collectors.toList());
+    public List<Film> getMostPopularFilm(int count) {
+        return filmStorage.getMostPopular(count);
     }
 }

@@ -4,15 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.film.FilmService;
-
 import javax.validation.Valid;
-import java.util.*;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/films")
 public class FilmController {
 
-    private FilmService filmService;
+    private final FilmService filmService;
 
     @Autowired
     public FilmController(FilmService filmService) {
@@ -25,7 +24,7 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film update(@Valid @RequestBody Film film) {
+    public Film update(@RequestBody @Valid Film film) {
         return filmService.update(film);
     }
 
@@ -36,7 +35,7 @@ public class FilmController {
     }
 
     @GetMapping
-    public List<Film> findAll() {
+    public List<Film> findAll(){
         return filmService.findAll();
     }
 
@@ -50,7 +49,7 @@ public class FilmController {
     // Если значение параметра count не задано, вернет первые 10.
     @GetMapping(value = "/popular")
     public List<Film> getPopularFilm(@RequestParam(defaultValue = "10", required = false) Integer count) {
-        return filmService.getTopTenFilm(count);
+        return filmService.getMostPopularFilm(count);
     }
 
     // пользователь удаляет лайк
